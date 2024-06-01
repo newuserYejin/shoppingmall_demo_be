@@ -22,5 +22,19 @@ userController.createUser = async (req, res) => {
     }
 }
 
+userController.getUser = async (req, res) => {
+    try {
+        const { userId } = req
+        const RecentUser = await User.findById(userId)
+        if (RecentUser) {
+            res.status(200).json({ status: "token getUser success", user: RecentUser })
+        } else {
+            throw new Error("Invalid Token")
+        }
+    } catch (error) {
+        res.status(400).json({ status: "token getUser fail", error: error.message })
+    }
+}
+
 module.exports = userController
 
