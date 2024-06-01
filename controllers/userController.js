@@ -8,7 +8,7 @@ userController.createUser = async (req, res) => {
         let { email, name, password, level } = req.body
         const existUser = await User.findOne({ email })          // 전달 받은 이메일로 기존 가입이 있는지 확인하기
         if (existUser) {
-            throw new Error("user already exist")
+            throw new Error("user email already exist")
         }
 
         const salt = await bcrypt.genSaltSync(10)
