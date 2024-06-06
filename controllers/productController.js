@@ -1,5 +1,5 @@
 const Product = require("../models/Product")
-
+const PAGE_SIZE = 5
 
 const productController = {}
 
@@ -16,8 +16,33 @@ productController.createProduct = async (req, res) => {
 
 productController.getProducts = async (req, res) => {
     try {
-        const products = await Product.find({})
-        res.status(200).json({ status: "get product success", data: products })
+        const { page, name } = req.query
+
+        const cond = name ? { name: { $regex: name, $options: "i" } } : {}
+        let query = Product.find(cond)
+        let response = { status: "success" }
+
+
+        // 단순한 방식
+        // if (name) {
+        //     const products = await Product.find({ name: { $regex: name, $options: "i" } })          // regex는 딱 그 name만이 아닌 name을 포함 한것도 검색되도록 한다. 여기에서의 option은 대소문자 구분 없이 검색하겠다.
+        // } else {
+        //     const products = await Product.find({})
+        // }
+
+        // 페이지네이션
+        if (page) {
+            query.skip((page - 1) * PAGE_SIZE).limit(PAGE_SIZE)       // 최대 5개의 데이터씩 보내겠다. (보여줄 때 앞 페이지 데이터들은 건너뛰고 보여주기 위해서 skip 사용)
+            // 최종 몇개의 페이지 인지
+            // 데이터 총 개수/ 페이지 크기
+            const totalItemNum = await Product.find(cond).count()       // 총 몇개 인지 숫자만 받기 위해 count사용
+            const totalPageNum = Math.ceil(totalItemNum / PAGE_SIZE)
+            response.totalPageNum = totalPageNum
+        }
+
+        const productList = await query.exec()      // 선언과 실행 따로
+        response.data = productList
+        res.status(200).json(response)
 
     } catch (error) {
         res.status(400).json({ status: "item save fail", error: e.message })
