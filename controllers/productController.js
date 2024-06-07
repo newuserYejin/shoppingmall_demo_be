@@ -18,7 +18,7 @@ productController.getProducts = async (req, res) => {
     try {
         const { page, name } = req.query
 
-        const cond = name ? { name: { $regex: name, $options: "i" } } : {}
+        const cond = name ? { name: { $regex: name, $options: "i" }, isDelete: false } : { isDelete: false }
         let query = Product.find(cond)
         let response = { status: "success" }
 
@@ -51,9 +51,9 @@ productController.getProducts = async (req, res) => {
 
 productController.updateProduct = async (req, res) => {
     try {
-        const productId = req.params.productId              // 수정할 product id 받아오기
+        const productId = req.params.id              // 수정할 product id 받아오기
         const { sku, name, size, image, price, description, category, stock, status } = req.body
-        const product = Product.findByIdAndUpdate(
+        const product = await Product.findByIdAndUpdate(
             { _id: productId },
             { sku, name, size, image, price, description, category, stock, status },
             { new: true })              // new:true는 update의 옵션 값 중 하나로 ture로 해두면 업데이트 후의 값을 받아올 수 있다.
@@ -62,6 +62,17 @@ productController.updateProduct = async (req, res) => {
         res.status(200).json({ status: "success", data: product })
     } catch (error) {
         res.status(400).json({ status: "item save fail", error: error.message })
+    }
+}
+
+productController.deleteProduct = async (req, res) => {
+    try {
+        const productId = req.params.id              // 수정할 product id 받아오기
+        const product = await Product.findByIdAndUpdate({ _id: productId }, { isDelete: true })
+        if (!product) throw new Error("item doesn't exist")
+        res.status(200).json({ status: "is delete success", data: product })
+    } catch (error) {
+        res.status(400).json({ status: "is delete fail", error: error.message })
     }
 }
 
