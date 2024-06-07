@@ -76,4 +76,15 @@ productController.deleteProduct = async (req, res) => {
     }
 }
 
+productController.getProductDetail = async (req, res) => {
+    try {
+        const productId = req.params.id
+        const product = await Product.findById(productId)
+        if (!product) throw new Error("id match item don't find")
+        res.status(200).json({ status: "find item success", data: product })
+    } catch (error) {
+        res.status(400).json({ status: "find item fail", error: error.message })
+    }
+}
+
 module.exports = productController
