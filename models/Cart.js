@@ -10,7 +10,7 @@ const cartSchema = Schema({
     },
     items: [{
         productId: { type: mongoose.ObjectId, ref: Product },
-        size: { type: String, required: true },
+        selectSize: { type: String, required: true },
         qty: { type: Number, default: 1, required: true }
     }]
 }, { timestamps: true })
