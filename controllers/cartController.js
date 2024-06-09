@@ -74,5 +74,45 @@ cartController.deleteCartProduct = async (req, res) => {
     }
 }
 
+cartController.updateCartItemQty = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { userId } = req
+        const { qty } = req.body
+
+        const cart = await Cart.findOne({ userId }).populate({
+            path: 'items',
+            populate: {
+                path: "productId",
+                model: "Product"
+            }
+        })
+
+        if (!cart) throw new Error("There is no cart for you")
+
+        const selectItemIndex = cart.items.findIndex((item) => item._id.equals(id))
+        console.log("selectItemIndex:", selectItemIndex)
+        if (selectItemIndex === -1) throw new Error("Can not find item")
+
+        cart.items[selectItemIndex].qty = qty
+        await cart.save()
+
+        res.status(200).json({ status: 200, data: cart.items })
+    } catch (error) {
+        res.status(400).json({ status: 400, error: error.message })
+    }
+}
+
+cartController.getTotalQty = async (req, res) => {
+    try {
+        const { userId } = req
+        const cart = await Cart.findOne({ userId })
+        if (!cart) throw new Error("There is no cart for you")
+        res.status(200).json({ status: 200, qty: cart.items.length })
+    } catch (error) {
+        res.status(400).json({ status: 400, error: error.message })
+    }
+}
+
 
 module.exports = cartController
