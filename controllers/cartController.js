@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");  // mongoose 모듈을 임포트
 const User = require("../models/User")
 const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken")
@@ -51,6 +52,25 @@ cartController.getCartList = async (req, res) => {
 
     } catch (error) {
         res.status(400).json({ status: "fail", error: error.message })
+    }
+}
+
+cartController.deleteCartProduct = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { userId } = req
+        const cart = await Cart.findOne({ userId })
+        console.log("before cart:", cart)
+
+        // const productIdToDelete = mongoose.ObjectId(id);
+        cart.items = cart.items.filter((item) => !item._id.equals(id))
+
+        await cart.save()
+        console.log("update cart:", cart)
+
+        res.status(200).json({ status: 200, cartItemQty: cart.items.length })
+    } catch (error) {
+        res.status(400).json({ status: 400, error: error.message })
     }
 }
 

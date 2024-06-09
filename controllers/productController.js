@@ -56,7 +56,7 @@ productController.updateProduct = async (req, res) => {
         const product = await Product.findByIdAndUpdate(
             { _id: productId },
             { sku, name, size, image, price, description, category, stock, status },
-            { new: true })              // new:true는 update의 옵션 값 중 하나로 ture로 해두면 업데이트 후의 값을 받아올 수 있다.
+            { new: true })              // new:true는 update의 옵션 값 중 하나로 true로 해두면 업데이트 후의 값을 받아올 수 있다.
 
         if (!product) throw new Error("item doesn't exist")
         res.status(200).json({ status: "success", data: product })
