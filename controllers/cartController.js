@@ -91,7 +91,6 @@ cartController.updateCartItemQty = async (req, res) => {
         if (!cart) throw new Error("There is no cart for you")
 
         const selectItemIndex = cart.items.findIndex((item) => item._id.equals(id))
-        console.log("selectItemIndex:", selectItemIndex)
         if (selectItemIndex === -1) throw new Error("Can not find item")
 
         cart.items[selectItemIndex].qty = qty
@@ -110,7 +109,7 @@ cartController.getTotalQty = async (req, res) => {
         if (!cart) throw new Error("There is no cart for you")
         res.status(200).json({ status: 200, qty: cart.items.length })
     } catch (error) {
-        res.status(400).json({ status: 400, error: error.message })
+        return res.status(400).json({ status: 400, error: error.message })
     }
 }
 

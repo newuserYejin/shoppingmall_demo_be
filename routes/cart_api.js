@@ -9,6 +9,6 @@ router.delete("/:id", authController.authenticate, cartController.deleteCartProd
 
 router.put("/:id", authController.authenticate, cartController.updateCartItemQty)
 
-router.get('/qty', authController.authenticate, cartController.getTotalQty)
+router.get("/qty", authController.authenticate, cartController.getTotalQty)
 
 module.exports = router
