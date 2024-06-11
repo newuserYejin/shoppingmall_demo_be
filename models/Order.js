@@ -7,9 +7,9 @@ const orderSchema = Schema({
     userId: { type: mongoose.ObjectId, ref: User },
     status: { type: String, default: "preparing" },
     totalPrice: { type: Number, default: 0, required: true },
-    shipTo: { type: Object, required: true },
-    contact: { type: Object, required: true },
-    oderNum: { type: String },
+    shipTo: { type: Object, required: true },       // 배송 주소
+    contact: { type: Object, required: true },      // 성, 이름, 연락처
+    oderNum: { type: String },                      // 주문번호
     items: [{
         productId: { type: mongoose.ObjectId, ref: Product },
         price: { type: Number, required: true },
