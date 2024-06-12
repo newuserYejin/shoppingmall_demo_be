@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const User = require('./User')
 const Product = require('./Product')
 const Schema = mongoose.Schema
+const Cart = require('./Cart')
 
 const orderSchema = Schema({
     userId: { type: mongoose.ObjectId, ref: User },
@@ -9,7 +10,7 @@ const orderSchema = Schema({
     totalPrice: { type: Number, default: 0, required: true },
     shipTo: { type: Object, required: true },       // 배송 주소
     contact: { type: Object, required: true },      // 성, 이름, 연락처
-    oderNum: { type: String },                      // 주문번호
+    orderNum: { type: String },                      // 주문번호
     items: [{
         productId: { type: mongoose.ObjectId, ref: Product },
         price: { type: Number, required: true },
@@ -25,6 +26,12 @@ orderSchema.methods.toJSON = function () {
     delete obj.createAt
     return obj
 }
+orderSchema.post("save", async function () {
+    // 카트 비우기
+    const cart = await Cart.findOne({ userId: this.userId })
+    cart.items = []
+    await cart.save()
+})
 
 const Order = mongoose.model("Order", orderSchema)
 module.exports = Order
