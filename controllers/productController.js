@@ -16,12 +16,28 @@ productController.createProduct = async (req, res) => {
 
 productController.getProducts = async (req, res) => {
     try {
-        const { page, name } = req.query
+        const { page, name, category } = req.query
 
-        const cond = name ? { name: { $regex: name, $options: "i" }, isDelete: false } : { isDelete: false }
+        console.log("category", category)
+
+        // const cond = name
+        //     ? { name: { $regex: name, $options: "i" }, isDelete: false }
+        //     : Array.isArray(category)
+        //         ? { category: { $in: category }, isDelete: false }
+        //         : { isDelete: false };
+
+        let cond
+
+        if (name) {
+            cond = { name: { $regex: name, $options: "i" }, isDelete: false }
+        } else if (category) {
+            cond = { category: category.toLowerCase(), isDelete: false }
+        } else {
+            cond = { isDelete: false }
+        }
+
         let query = Product.find(cond)
         let response = { status: "success" }
-
 
         // 단순한 방식
         // if (name) {
@@ -41,11 +57,13 @@ productController.getProducts = async (req, res) => {
         }
 
         const productList = await query.exec()      // 선언과 실행 따로
+        console.log("controller productList:", productList)
+
         response.data = productList
         res.status(200).json(response)
 
     } catch (error) {
-        res.status(400).json({ status: "item save fail", error: e.message })
+        res.status(400).json({ status: "item save fail", error: error.message })
     }
 }
 
